@@ -1,9 +1,36 @@
-document.addEventListener("DOMContentLoaded", main);
-
 var type_fractale = "default.glsl";
 var ressources;
 var toile;
 var gl;
+
+var est_souris_pressée = false;
+var souris_pos = [0,0];
+
+var décalage = [0,0];
+var zoom = 1.0;
+var ratio = [0,1];
+var DÉCALAGE = {};
+var ZOOM = {};
+var RATIO = {};
+
+document.addEventListener("DOMContentLoaded", main);
+document.addEventListener("wheel", (event)=>{
+    zoom = zoom*Math.pow(0.5,-event.deltaY/toile.height);
+    dessiner(0);
+});
+document.addEventListener("mousedown", ()=>{
+    est_souris_pressée = true;
+});
+document.addEventListener("mouseup", ()=>{est_souris_pressée = false;});
+document.addEventListener("mousemove", (event)=>{
+    if(est_souris_pressée){
+        décalage[0] -= ((souris_pos[0]-event.clientX)/toile.width)*zoom;
+        décalage[1] += ((souris_pos[1]-event.clientY)/toile.height)*zoom;
+        dessiner(0);
+    }
+    souris_pos[0] = event.clientX;
+    souris_pos[1] = event.clientY;
+});
 
 function main(){
 
@@ -163,6 +190,10 @@ function faireNuanceur(source){
 
         gl.bindAttribLocation(programme, 0, "pos");
 
+        DÉCALAGE[nom+".glsl"] = gl.getUniformLocation(programme,"decalage");
+        ZOOM[nom+".glsl"] = gl.getUniformLocation(programme,"zoom");
+        RATIO[nom+".glsl"] = gl.getUniformLocation(programme,"ratio");
+
         ressources[nom + ".glsl"] = programme;
     }
 
@@ -172,8 +203,12 @@ function dessiner(temps){
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    var VAO = ressources["VAO"];
     gl.useProgram(ressources[type_fractale]);
+    gl.uniform2f(DÉCALAGE[type_fractale],décalage[0],décalage[1]);
+    gl.uniform1f(ZOOM[type_fractale],zoom);
+    gl.uniform2f(RATIO[type_fractale],ratio[0],ratio[1]);
+
+    var VAO = ressources["VAO"];
     gl.bindVertexArray(VAO);
     gl.enableVertexAttribArray(0);
 
@@ -191,5 +226,7 @@ function surChangementFenêtre(){
     toile.width = toile.clientWidth;
     toile.height = toile.clientHeight;
     gl.viewport(0,0,toile.width,toile.height);
+    var ratio_f = toile.height / toile.width;
+    ratio = [1.0, ratio_f];
     dessiner(0);
 }
