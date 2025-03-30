@@ -43,23 +43,5 @@ vec3 hsv2rgb(vec3 c)
 //////////////////////////////////////////////*/
 
 void main(){
-    vec2 c = (pos_O.xy*ratio*zoom-decalage);
-    vec2 z = c;
-    bool est_infini = false;
-    int bonds = 0;
-    for (int i = 0; i < iterations; i++){
-        if (length(z) > 2.0){
-            bonds = i+1;
-            est_infini = true;
-            break;
-        }
-        z = vec2(z.x*z.x-z.y*z.y, 2.0*z.x*z.y)+c;
-    }
-    if (est_infini){
-        float lum = float(bonds)/float(iterations);
-        vec3 col = hsv2rgb( vec3( cos((lum + 5.0)*50.0)*0.5 + 0.5, sin(lum*100.0)*0.25 + 0.5, sin(lum*100.0)*0.25 + 0.5 ) );
-        Fragment = vec4(col,1.0);
-    }else{
-        Fragment = vec4(0.0,0.0,0.0,1.0);
-    }
+    Fragment = vec4(pos_O,1.0);
 }

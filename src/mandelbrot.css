@@ -7,19 +7,52 @@ html, body{
     height: 100%;
 }
 
-h1{
-    margin: 50px;
-    position: fixed;
-    bottom:0;
-    background-color: white;
+button{
+    margin-left: 10px;
+    padding: 10px;
     z-index: 510;
+    font-size: 2em;
+    color: rgb(187, 166, 139);
+    background-color: rgb(30,30,40);
+    border: 2px solid rgb(40,40,45);
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
+    box-shadow: 0 0 20px #0002;
+    cursor: pointer;
 }
 
-button{
-    margin: 50px;
-    position: fixed;
-    bottom:0;
+button:hover{
+    background-color: rgb(50,50,60);
+}
+
+div{
     z-index: 510;
+    position: fixed;
+    align-items: center;
+    padding:40px;
+}
+
+label{
+    color: rgb(187, 166, 139);
+    font-size: 2em;
+    padding: 5px;
+    margin: 10px;
+}
+
+input{
+    background-color: rgb(30,30,40);
+    font-size: 1.5em;
+    border: 2px solid #0002;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+    color: rgb(187, 166, 139);
+    margin : 10px;
 }
 
 canvas{
