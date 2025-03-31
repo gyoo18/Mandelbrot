@@ -279,11 +279,39 @@ function dessiner(temps){
 }
 
 function chargerMandelbrot(){
+    document.getElementById("Itérations").value = 400;
+    itérations = 200;
+    document.getElementById("explications").innerHTML =`
+        <h1>L'ensemble de Mandelbrot</h1>
+        <p>Se calcule avec la formule suivante :</p>
+        <p>z = z² + c</p>
+        <p>
+            Où z est un nombre complexe sur lequel on itère la formule précédente et c un nombre complexe initial du plan.
+            La plupart des valeurs initiales c tendent vers l'infini, mais celles qui restent stables font partie de l'ensemble
+            de Mandelbrot et sont ici colorés en noir. Il est possible d'affirmer qu'un nombre ne fait pas partie de l'ensemble
+            dès que la suite d'itération fait en sorte que sa norme dépasse 2. Les couleurs indiquent alors combien d'itérations
+            ont été nécessaires pour atteindre cette barrière.
+        </p>
+        <h3>Contrôles : </h3>
+        <p>Cliquez et bougez la souris pour vous déplacer.</p>
+        <p>Glissez la mollette pour zoomer/dézoomer.</p>
+        `;
     type_fractale = "mandelbrot.glsl";
     dessiner(0);
 }
 
 function chargerSierpinski(){
+    document.getElementById("explications").innerHTML = 
+    `<h1>Le triangle de Sierpinski</h1>
+    <p>
+        Le triangle se construit de manière triviale en découpant de manière successive un triangle inversé de chaque triangle plein.
+        Cependant, cette approche ne se prette pas bien à un programme sur GPU. Ainsi, ce programme reflète les coordonées uvs récursivement
+        pour ensuite construire un triangle sur dans chaque reflet. Cette approche a l'avantage de pouvoir facilement trouver la distance depuis
+        les bords du triangle et de facilement être adaptable pour d'autres formes.
+    </p>
+    <h3>Contrôles</h3>
+    <p>Cliquez et bougez la souris pour vous déplacer.</p>
+    <p>Tournez la mollette pour zoomer/dézoomer.</p>`;
     document.getElementById("Itérations").value = 5;
     itérations = 5;
     type_fractale = "sierpinski.glsl";
@@ -291,6 +319,27 @@ function chargerSierpinski(){
 }
 
 function chargerJulia(){
+    document.getElementById("explications").innerHTML =
+    `<h1>L'ensemble de Julia</h1>
+    <p>Se calcule avec la formule suivante :</p>
+    <p>
+        z = x
+        z = z² + c
+    </p>
+    <p>
+        Où z est un nombre complexe sur lequel on itère la formule précédente, c un nombre complexe arbitraire et x un nombre
+        complexe initial du plan. La plupart des valeurs initiales x tendent vers l'infini, mais celles qui restent stables 
+        font partie de l'ensemble de Julia et sont ici colorés en noir. Il est possible d'affirmer qu'un nombre ne fait pas 
+        partie de l'ensemble dès que la suite d'itération fait en sorte que sa norme dépasse 2. Les couleurs indiquent alors 
+        combien d'itérations ont été nécessaires pour atteindre cette barrière.
+    </p>
+    <h3>Contrôles : </h3>
+    <p>Cliquez et bougez la souris pour vous déplacer.</p>
+    <p>Glissez la mollette pour zoomer/dézoomer.</p>
+    <p>Ctrl+clic et bougez la souris pour déplacer le point c et obtenir différentes versions de l'ensemble de Julia.</p
+    `;
+    document.getElementById("Itérations").value = 400;
+    itérations = 200;
     type_fractale = "julia.glsl";
     dessiner(0);
 }
@@ -306,5 +355,12 @@ function surChangementFenêtre(){
 
 function changerIterations(i){
     itérations = Number(document.getElementById("Itérations").value);
+    dessiner(0);
+}
+
+function réinitialiser(){
+    décalage = [0.5,0];
+    zoom = 3.0;
+    pointParam = [0,0];
     dessiner(0);
 }
