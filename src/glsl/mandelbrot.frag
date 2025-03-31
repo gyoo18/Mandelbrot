@@ -13,7 +13,7 @@ out vec4 Fragment;
 //////////////////////////////////////////////////////////////////////////////////////////////*/
 // Copié de Sam Hocevar sur stack overflow                                                    //
 // Source : https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl       //
-// Source originale : http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl.à               //
+// Source originale : http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl.               //
 // Liscence : WTFPL.                                                                          //
 //////////////////////////////////////////////////////////////////////////////////////////////*/
 
