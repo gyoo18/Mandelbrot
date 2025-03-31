@@ -7,7 +7,6 @@ uniform vec2 decalage;
 uniform float zoom;
 uniform vec2 ratio;
 uniform int iterations;
-uniform float paramA;
 
 out vec4 Fragment;
 
@@ -47,13 +46,16 @@ void main(){
     vec2 z = c;
     bool est_infini = false;
     int bonds = 0;
-    for (int i = 0; i < iterations; i++){
-        if (length(z) > 2.0){
-            bonds = i+1;
-            est_infini = true;
-            break;
+    float p = sqrt((c.x-0.25)*(c.x-0.25)+(c.y*c.y));
+    if (!(c.x < p-(2.0*p*p)+0.25 || (c.x+1.0)*(c.x+1.0)+c.y*c.y < 1.0/16.0)){
+        for (int i = 0; i < iterations; i++){
+            if (length(z) > 2.0){
+                bonds = i+1;
+                est_infini = true;
+                break;
+            }
+            z = vec2(z.x*z.x-z.y*z.y, 2.0*z.x*z.y)+c;
         }
-        z = vec2(z.x*z.x-z.y*z.y, 2.0*z.x*z.y)+c;
     }
     if (est_infini){
         float lum = float(bonds)/float(iterations);

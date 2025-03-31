@@ -7,7 +7,6 @@ uniform vec2 decalage;
 uniform float zoom;
 uniform vec2 ratio;
 uniform int iterations;
-uniform float paramA;
 uniform vec2 pointParam;
 
 out vec4 Fragment;
@@ -43,40 +42,24 @@ vec3 hsv2rgb(vec3 c)
 // Fin du code copié de sam Hocevar           //
 //////////////////////////////////////////////*/
 
-float PI = 3.141592653589793238;
-
-vec2 mirroir(vec2 uv, vec2 pos, float rot){
-    mat2 rotMat = mat2(cos(rot),-sin(rot),sin(rot),cos(rot));
-    mat2 rotMati = mat2(cos(-rot),-sin(-rot),sin(-rot),cos(-rot));
-    uv = rotMat*(uv-pos);
-    uv.y = abs(uv.y);
-    uv = rotMati*uv + pos;
-    return uv;
-}
-
 void main(){
-    vec2 pos = (pos_O.xy*ratio*zoom - decalage);
-    bool est_triangle = false;
-    mat2 rotA = mat2(cos(120.0*PI/180.0),-sin(120.0*PI/180.0),sin(120.0*PI/180.0),cos(120.0*PI/180.0));
-    mat2 rotB = mat2(cos(240.0*PI/180.0),-sin(240.0*PI/180.0),sin(240.0*PI/180.0),cos(240.0*PI/180.0));
-    pos *= pow(2.0,float(iterations));
-    pos -= vec2(0.0,pow(2.0,float(iterations)) - 1.0);
-    float dist = 0.0;
-    for (int i = iterations; i > 0; i--){
-        float facteur = pow(2.0,float(i))-1.0;
-        pos = mirroir(pos, vec2(facteur*cos(PI/6.0),-facteur*sin(PI/6.0)), 30.0*PI/180.0);
-        pos = mirroir(pos, vec2(-facteur*cos(PI/6.0),-facteur*sin(PI/6.0)), -30.0*PI/180.0);
+    vec2 c = (pos_O.xy*ratio*zoom-decalage);
+    vec2 z = c;
+    bool est_infini = false;
+    int bonds = 0;
+    for (int i = 0; i < iterations; i++){
+        if (length(z) > 2.0){
+            bonds = i+1;
+            est_infini = true;
+            break;
+        }
+        z = vec2(z.x*z.x-z.y*z.y, 2.0*z.x*z.y)+pointParam;
     }
-    if (pos.y > -sin(PI/6.0) && (rotA*pos).y > -sin(PI/6.0) && (rotB*pos).y > -sin(PI/6.0)){
-        est_triangle = true;
-    }else{
-        dist = -min(pos.y,min((rotA*pos).y,(rotB*pos).y));
-    }
-
-    if (est_triangle){
-        Fragment = vec4(1.0);
-    }else{
-        vec3 col = hsv2rgb( vec3( cos(-log2((dist*10.0)))*0.5 + 0.5, sin(-log2(dist*5.0))*0.25 + 0.5, sin(-log2(dist*20.0))*0.25 + 0.5 ) );
+    if (est_infini){
+        float lum = float(bonds)/float(iterations);
+        vec3 col = hsv2rgb( vec3( cos((lum + 5.0)*50.0)*0.5 + 0.5, sin(lum*100.0)*0.25 + 0.5, sin(lum*100.0)*0.25 + 0.5 ) );
         Fragment = vec4(col,1.0);
+    }else{
+        Fragment = vec4(0.0,0.0,0.0,1.0);
     }
 }

@@ -11,11 +11,13 @@ var zoom = 3.0;
 var ratio = [0,1];
 var itérations = 1000;
 var paramA = 2;
+var pointParam = [0,0];
 var DÉCALAGE = {};
 var ZOOM = {};
 var RATIO = {};
 var ITERATIONS = {};
 var PARAM_A = {};
+var POINT_PARAM = {};
 
 document.addEventListener("DOMContentLoaded", main);
 document.addEventListener("wheel", (event)=>{
@@ -27,7 +29,11 @@ document.addEventListener("mousedown", ()=>{
 });
 document.addEventListener("mouseup", ()=>{est_souris_pressée = false;});
 document.addEventListener("mousemove", (event)=>{
-    if(est_souris_pressée){
+    if(est_souris_pressée && event.ctrlKey){
+        pointParam[0] -= ((souris_pos[0]-event.clientX)/toile.width)*zoom;
+        pointParam[1] += ((souris_pos[1]-event.clientY)/toile.height)*zoom;
+        dessiner(0);
+    } else if (est_souris_pressée && !event.ctrlKey){
         décalage[0] -= ((souris_pos[0]-event.clientX)/toile.width)*zoom;
         décalage[1] += ((souris_pos[1]-event.clientY)/toile.height)*zoom;
         dessiner(0);
@@ -90,8 +96,8 @@ function chargerRessources(){
 
     var mandelbrot_vert = new XMLHttpRequest();
     mandelbrot_vert.onreadystatechange = function(){
-        if (mandelbrot_vert.readyState == 4 && mandelbrot_vert.status == 200) {
-            var source = mandelbrot_vert.responseText
+        if (this.readyState == 4 && this.status == 200) {
+            var source = this.responseText
             ressources["mandelbrot.vert"] = source;
             faireNuanceur("mandelbrot.vert");
         }
@@ -112,8 +118,8 @@ function chargerRessources(){
 
     var sierpinski_vert = new XMLHttpRequest();
     sierpinski_vert.onreadystatechange = function(){
-        if (sierpinski_vert.readyState == 4 && sierpinski_vert.status == 200) {
-            var source = sierpinski_vert.responseText
+        if (this.readyState == 4 && this.status == 200) {
+            var source = this.responseText
             ressources["sierpinski.vert"] = source;
             faireNuanceur("sierpinski.vert");
         }
@@ -131,6 +137,28 @@ function chargerRessources(){
     }
     sierpinski_frag.open("GET", "glsl/sierpinski.frag");
     sierpinski_frag.send();
+
+    var julia_vert = new XMLHttpRequest();
+    julia_vert.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            var source = this.responseText
+            ressources["julia.vert"] = source;
+            faireNuanceur("julia.vert");
+        }
+    }
+    julia_vert.open("GET", "glsl/julia.vert");
+    julia_vert.send();
+
+    var julia_frag = new XMLHttpRequest();
+    julia_frag.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            var source = this.responseText
+            ressources["julia.frag"] = source;
+            faireNuanceur("julia.frag");
+        }
+    }
+    julia_frag.open("GET", "glsl/julia.frag");
+    julia_frag.send();
 }
 
 function initialiserVAO(){
@@ -222,6 +250,7 @@ function faireNuanceur(source){
         RATIO[nom+".glsl"] = gl.getUniformLocation(programme,"ratio");
         ITERATIONS[nom+".glsl"] = gl.getUniformLocation(programme,"iterations");
         PARAM_A[nom+".glsl"] = gl.getUniformLocation(programme,"paramA");
+        POINT_PARAM[nom+".glsl"] = gl.getUniformLocation(programme,"pointParam");
 
         ressources[nom + ".glsl"] = programme;
     }
@@ -236,8 +265,9 @@ function dessiner(temps){
     gl.uniform2f(DÉCALAGE[type_fractale],décalage[0],décalage[1]);
     gl.uniform1f(ZOOM[type_fractale],zoom);
     gl.uniform2f(RATIO[type_fractale],ratio[0],ratio[1]);
-    gl.uniform1i(ITERATIONS[type_fractale],itérations)
-    gl.uniform1i(PARAM_A[type_fractale],paramA)
+    gl.uniform1i(ITERATIONS[type_fractale],itérations);
+    gl.uniform1i(PARAM_A[type_fractale],paramA);
+    gl.uniform2f(POINT_PARAM[type_fractale],pointParam[0],pointParam[1]);
 
     var VAO = ressources["VAO"];
     gl.bindVertexArray(VAO);
@@ -254,7 +284,14 @@ function chargerMandelbrot(){
 }
 
 function chargerSierpinski(){
+    document.getElementById("Itérations").value = 5;
+    itérations = 5;
     type_fractale = "sierpinski.glsl";
+    dessiner(0);
+}
+
+function chargerJulia(){
+    type_fractale = "julia.glsl";
     dessiner(0);
 }
 
